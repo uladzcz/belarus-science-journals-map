@@ -69,13 +69,13 @@
    git add .
    git commit -m "Першы рэліз інтэрактыўнай карты навуковых часопісаў"
    git branch -M main
-   git remote add origin https://github.com/ВАША_ІМЯ/belarus-science-journals.git
+   git remote add origin https://github.com/uladzcz/belarus-science-journals-map.git
    git push -u origin main
    ```
 3. Перайдзіце ў налады рэпазіторыя на GitHub: **Settings** → **Pages**.
 4. У раздзеле **Build and deployment** абярыце **Deploy from a branch** і пазначце галіну `main` (корань `/root`).
 5. Праз 30-60 секунд ваша інтэрактыўная карта будзе даступная па адрасе:
-   `https://ВАША_ІМЯ.github.io/belarus-science-journals/`
+   `https://uladzcz.github.io/belarus-science-journals-map/`
 
 *Таксама ў рэпазіторый уключаны гатовы аўтаматычны працэс GitHub Actions (`.github/workflows/deploy.yml`).*
 
