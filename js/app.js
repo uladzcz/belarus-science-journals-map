@@ -39,14 +39,54 @@ function initMap() {
     zoomControl: true
   });
 
-  // Базавая падложка карт (CartoDB Voyager для чыстага сучаснага дызайну)
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    subdomains: "abcd",
+  // 1. Esri World Street Map — надзейная, выразна паказвае гарады і межы краін, не блакуецца
+  const esriStreet = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
+    attribution: 'Tiles &copy; Esri, HERE, Garmin, USGS, Intermap, METI, NRCAN',
     maxZoom: 19
-  }).addTo(map);
+  });
+
+  // 2. Esri World Topo Map — тапаграфічны рэльефны стыль
+  const esriTopo = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}", {
+    attribution: 'Tiles &copy; Esri, DeLorme, NAVTEQ, TomTom, Intermap, USGS, FAO',
+    maxZoom: 18
+  });
+
+  // 3. OpenStreetMap стандартная падложка
+  const osm = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19
+  });
+
+  // 4. CartoDB Voyager
+  const cartoVoyager = L.tileLayer("https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png", {
+    attribution: '&copy; CartoDB &copy; OpenStreetMap',
+    maxZoom: 19
+  });
+
+  // Па змаўчанні ўключаем надзейную Esri Street Map
+  esriStreet.addTo(map);
+
+  // Пераключальнік слаёў у правым верхнім куце карты
+  const baseMaps = {
+    "🗺️ Вуліцы і межы (Esri Street)": esriStreet,
+    "🏔️ Рэльеф і тапаграфія (Esri Topo)": esriTopo,
+    "🌍 Стандартная OpenStreetMap": osm,
+    "🎨 Светлая Carto Voyager": cartoVoyager
+  };
+  L.control.layers(baseMaps, null, { position: "topright" }).addTo(map);
 
   markersLayer = L.layerGroup().addTo(map);
+
+  // Прымусовае абнаўленне памераў карты пасля рэндэрынгу кантэйнера
+  setTimeout(() => {
+    map.invalidateSize();
+  }, 200);
+  setTimeout(() => {
+    map.invalidateSize();
+  }, 800);
+  window.addEventListener("resize", () => {
+    map.invalidateSize();
+  });
 }
 
 /**
@@ -58,6 +98,8 @@ function getMarkerClass(countryCode) {
     case "PL": return "marker-pl";
     case "LT": return "marker-lt";
     case "LV": return "marker-lv";
+    case "UA": return "marker-ua";
+    case "RU": return "marker-ru";
     default: return "marker-other";
   }
 }
@@ -71,11 +113,71 @@ function getMarkerIcon(countryCode) {
     "PL": "🇵🇱",
     "LT": "🇱🇹",
     "LV": "🇱🇻",
+    "UA": "🇺🇦",
+    "RU": "🇷🇺",
     "GB": "🇬🇧",
     "CZ": "🇨🇿",
     "DE": "🇩🇪"
   };
   return flags[countryCode] || "📖";
+}
+
+/**
+ * Адмалёўка выразных бэйджаў моў публікацыі
+ */
+function renderLanguageBadges(languages) {
+  if (!languages || languages.length === 0) return '';
+  return languages.map(lang => {
+    const l = lang.toLowerCase().trim();
+    if (l === "беларуская") {
+      return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-emerald-100 text-emerald-950 border border-emerald-300 shadow-2xs" title="Прымае да публікацыі артыкулы на беларускай мове">
+        <span class="w-2 h-2 rounded-full bg-emerald-600 inline-block"></span>
+        <span>Беларуская</span>
+      </span>`;
+    }
+    if (l === "англійская") {
+      return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-blue-50 text-blue-800 border border-blue-200">
+        <span>🇬🇧</span>
+        <span>Англійская</span>
+      </span>`;
+    }
+    if (l === "польская") {
+      return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-rose-50 text-rose-800 border border-rose-200">
+        <span>🇵🇱</span>
+        <span>Польская</span>
+      </span>`;
+    }
+    if (l === "ўкраінская") {
+      return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-amber-50 text-amber-900 border border-amber-300">
+        <span>🇺🇦</span>
+        <span>Украінская</span>
+      </span>`;
+    }
+    if (l === "руская") {
+      return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-normal bg-slate-100 text-slate-700 border border-slate-200">
+        <span>Руская</span>
+      </span>`;
+    }
+    if (l === "літоўская") {
+      return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-amber-50 text-amber-800 border border-amber-200">
+        <span>🇱🇹</span>
+        <span>Літоўская</span>
+      </span>`;
+    }
+    if (l === "нямецкая") {
+      return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-slate-100 text-slate-800 border border-slate-300">
+        <span>🇩🇪</span>
+        <span>Нямецкая</span>
+      </span>`;
+    }
+    if (l === "чэшская") {
+      return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-indigo-50 text-indigo-800 border border-indigo-200">
+        <span>🇨🇿</span>
+        <span>Чэшская</span>
+      </span>`;
+    }
+    return `<span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] bg-slate-100 text-slate-700">${escapeHtml(lang)}</span>`;
+  }).join(' ');
 }
 
 /**
@@ -228,8 +330,17 @@ function renderJournalCards(journals) {
           <span class="font-medium text-slate-700">Выдавец:</span> ${escapeHtml(journal.publisher)}
         </p>
 
-        <div class="flex flex-wrap gap-1 mb-2.5">
+        <div class="flex flex-wrap gap-1 mb-2">
           ${journal.disciplines.map(d => `<span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">${d}</span>`).join('')}
+        </div>
+
+        <!-- Выразнае вылучэнне моў публікацыі -->
+        <div class="flex items-center gap-1.5 flex-wrap mb-2.5 p-2 rounded-lg bg-slate-50 border border-slate-100">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mr-0.5 flex items-center gap-1 shrink-0">
+            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/></svg>
+            <span>Мовы:</span>
+          </span>
+          ${renderLanguageBadges(journal.languages)}
         </div>
 
         <div class="text-xs text-slate-600 mb-3 bg-slate-50 p-2 rounded-lg border border-slate-100">
@@ -335,6 +446,20 @@ function openJournalModal(id) {
         <div><strong class="text-slate-800">Выдавец:</strong> ${escapeHtml(journal.publisher)}</div>
         ${journal.issn ? `<div><strong class="text-slate-800">ISSN:</strong> <span class="font-mono">${escapeHtml(journal.issn)}</span></div>` : ''}
         <div><strong class="text-slate-800">Перыядычнасць:</strong> ${escapeHtml(journal.frequency)}</div>
+      </div>
+    </div>
+
+    <!-- Выразнае вылучэнне моў публікацыі -->
+    <div class="bg-gradient-to-r from-emerald-50 via-teal-50 to-sky-50 border-2 border-emerald-300 rounded-xl p-3.5 mb-5 shadow-xs">
+      <div class="flex items-center justify-between gap-2 mb-2 flex-wrap">
+        <span class="text-xs font-bold uppercase tracking-wider text-emerald-950 flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/></svg>
+          <span>Мовы публікацыі артыкула</span>
+        </span>
+        ${journal.languages.includes("беларуская") ? '<span class="text-[11px] font-bold text-emerald-900 bg-white px-2.5 py-0.5 rounded-full border border-emerald-300 shadow-2xs">✓ Можна падаваць па-беларуску</span>' : '<span class="text-[11px] text-slate-500">Артыкулы прымаюцца толькі на названых мовах</span>'}
+      </div>
+      <div class="flex flex-wrap gap-2">
+        ${renderLanguageBadges(journal.languages)}
       </div>
     </div>
 
@@ -495,6 +620,40 @@ function initFilters() {
     filters.apc = e.target.value;
     applyFilters();
   });
+
+  // Селект мовы
+  const languageSelect = document.getElementById("select-language");
+  languageSelect?.addEventListener("change", (e) => {
+    filters.language = e.target.value;
+    updateQuickBelBtn();
+    applyFilters();
+  });
+
+  // Хуткая кнопка «Толькі з беларускай мовай»
+  const quickBelBtn = document.getElementById("btn-quick-belarusian");
+  quickBelBtn?.addEventListener("click", () => {
+    if (filters.language === "беларуская") {
+      filters.language = "all";
+      if (languageSelect) languageSelect.value = "all";
+    } else {
+      filters.language = "беларуская";
+      if (languageSelect) languageSelect.value = "беларуская";
+    }
+    updateQuickBelBtn();
+    applyFilters();
+  });
+}
+
+function updateQuickBelBtn() {
+  const btn = document.getElementById("btn-quick-belarusian");
+  if (!btn) return;
+  if (filters.language === "беларуская") {
+    btn.classList.add("bg-emerald-600", "text-white", "border-emerald-600");
+    btn.classList.remove("bg-emerald-50", "text-emerald-800", "border-emerald-300");
+  } else {
+    btn.classList.remove("bg-emerald-600", "text-white", "border-emerald-600");
+    btn.classList.add("bg-emerald-50", "text-emerald-800", "border-emerald-300");
+  }
 }
 
 /**
@@ -540,6 +699,13 @@ function applyFilters() {
       if (!isFree) return false;
     }
 
+    // 6. Мова публікацыі
+    if (filters.language !== "all") {
+      const targetLang = filters.language.toLowerCase().trim();
+      const hasLang = journal.languages.some(l => l.toLowerCase().trim() === targetLang);
+      if (!hasLang) return false;
+    }
+
     return true;
   });
 
@@ -557,11 +723,15 @@ function resetFilters() {
   filters.discipline = "all";
   filters.indexing = "all";
   filters.apc = "all";
+  filters.language = "all";
 
   document.getElementById("search-input").value = "";
   document.getElementById("select-discipline").value = "all";
   document.getElementById("select-indexing").value = "all";
   document.getElementById("select-apc").value = "all";
+  const langSelect = document.getElementById("select-language");
+  if (langSelect) langSelect.value = "all";
+  updateQuickBelBtn();
 
   document.querySelectorAll("[data-filter-country]").forEach(b => {
     b.classList.remove("bg-sky-600", "text-white");

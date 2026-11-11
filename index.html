@@ -129,7 +129,7 @@
           </svg>
         </div>
 
-        <!-- Кнопкі краін -->
+        <!-- Кнопкі краін і хуткі фільтр па беларускай мове -->
         <div class="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0 text-xs">
           <span class="text-slate-400 text-xs mr-1 shrink-0">Краіна:</span>
           <button data-filter-country="all" class="px-3 py-1.5 rounded-lg font-medium transition-colors bg-sky-600 text-white shrink-0">Усе</button>
@@ -137,9 +137,16 @@
           <button data-filter-country="PL" class="px-3 py-1.5 rounded-lg font-medium transition-colors bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 shrink-0">🇵🇱 Польшча</button>
           <button data-filter-country="LT" class="px-3 py-1.5 rounded-lg font-medium transition-colors bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 shrink-0">🇱🇹 Літва</button>
           <button data-filter-country="LV" class="px-3 py-1.5 rounded-lg font-medium transition-colors bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 shrink-0">🇱🇻 Латвія</button>
+          <button data-filter-country="UA" class="px-3 py-1.5 rounded-lg font-medium transition-colors bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 shrink-0">🇺🇦 Украіна</button>
+          <button data-filter-country="RU" class="px-3 py-1.5 rounded-lg font-medium transition-colors bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 shrink-0">🇷🇺 Расія</button>
           <button data-filter-country="GB" class="px-3 py-1.5 rounded-lg font-medium transition-colors bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 shrink-0">🇬🇧 Вялікабрытанія</button>
           <button data-filter-country="CZ" class="px-3 py-1.5 rounded-lg font-medium transition-colors bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 shrink-0">🇨🇿 Чэхія</button>
           <button data-filter-country="DE" class="px-3 py-1.5 rounded-lg font-medium transition-colors bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 shrink-0">🇩🇪 Германія</button>
+          <div class="h-4 w-px bg-slate-300 mx-1 shrink-0"></div>
+          <button id="btn-quick-belarusian" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all border border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 flex items-center gap-1.5 shrink-0 shadow-2xs" title="Фільтраваць часопісы, якія прымаюць артыкулы на беларускай мове">
+            <span class="w-2 h-2 rounded-full bg-emerald-600 inline-block"></span>
+            <span>Толькі з беларускай мовай</span>
+          </button>
         </div>
 
       </div>
@@ -174,6 +181,18 @@
             <option value="DOAJ">DOAJ (Адкрыты доступ)</option>
             <option value="ERIH PLUS">ERIH PLUS (Еўрапейскі індэкс)</option>
             <option value="РИНЦ">РИНЦ</option>
+          </select>
+        </div>
+
+        <!-- Мова публікацыі -->
+        <div class="flex items-center gap-1.5">
+          <label for="select-language" class="text-slate-500 font-medium shrink-0">Мова:</label>
+          <select id="select-language" class="bg-slate-50 border border-slate-300 rounded-lg py-1.5 px-2.5 text-xs text-slate-700 focus:outline-hidden focus:ring-2 focus:ring-sky-500 font-medium">
+            <option value="all">Усе мовы</option>
+            <option value="беларуская">🟢 Прымае па-беларуску</option>
+            <option value="англійская">🇬🇧 Англійская (English)</option>
+            <option value="польская">🇵🇱 Польская (Polski)</option>
+            <option value="руская">Руская</option>
           </select>
         </div>
 
@@ -235,8 +254,8 @@
         </div>
 
         <!-- Кантэйнер карты Leaflet -->
-        <div class="flex-1 rounded-xl overflow-hidden border border-slate-200 shadow-sm relative">
-          <div id="map"></div>
+        <div class="flex-1 rounded-xl overflow-hidden border border-slate-200 shadow-sm relative min-h-[500px] h-full">
+          <div id="map" class="w-full h-full min-h-[500px]"></div>
         </div>
       </div>
 
